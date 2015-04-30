@@ -4,7 +4,6 @@
 Name:           memcached
 Version:        1.4.17
 Release:        3%{?dist}
-Epoch:          0
 Summary:        High Performance, Distributed Memory Object Cache
 
 Group:          System Environment/Daemons
@@ -44,7 +43,7 @@ web applications by alleviating database load.
 %package devel
 Summary: Files needed for development using memcached protocol
 Group: Development/Libraries
-Requires: %{name} = %{epoch}:%{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 
 %description devel
 Install memcached-devel if you are developing C/C++ applications that require

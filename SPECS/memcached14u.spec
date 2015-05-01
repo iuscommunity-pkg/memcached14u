@@ -30,9 +30,6 @@ Requires(post): systemd-sysv
 Requires(pre):  shadow-utils
 
 
-# as of 3.5.5-4 selinux has memcache included
-Obsoletes: memcached-selinux
-
 %description
 memcached is a high-performance, distributed memory object caching
 system, generic in nature, but intended for use in speeding up dynamic

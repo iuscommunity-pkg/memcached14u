@@ -23,13 +23,15 @@ Patch001:       memcached-manpages.patch
 
 # Fixes
 
-BuildRequires:  libevent-devel systemd-units
-BuildRequires:  perl(Test::More), perl(Test::Harness)
+BuildRequires:  libevent-devel
+BuildRequires:  perl(Test::More)
+BuildRequires:  perl(Test::Harness)
+Requires(pre):  shadow-utils
 
+BuildRequires: systemd
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-Requires(pre):  shadow-utils
 
 Provides: %{real_name} = %{version}-%{release}
 Provides: %{real_name}%{?_isa} = %{version}-%{release}

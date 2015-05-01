@@ -5,8 +5,9 @@ Name:           memcached
 Version:        1.4.17
 Release:        3%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
-
+%if 0%{?rhel} <= 6
 Group:          System Environment/Daemons
+%endif
 License:        BSD
 URL:            http://www.memcached.org/
 Source0:        http://www.memcached.org/files/%{name}-%{version}.tar.gz

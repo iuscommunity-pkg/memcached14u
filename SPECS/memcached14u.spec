@@ -1,16 +1,19 @@
+%global real_name memcached
+%global ius_suffix 14u
+
 %define username   memcached
 %define groupname  memcached
 
-Name:           memcached
+Name:           %{real_name}%{ius_suffix}
 Version:        1.4.17
-Release:        3%{?dist}
+Release:        1.ius%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 %if 0%{?rhel} <= 6
 Group:          System Environment/Daemons
 %endif
 License:        BSD
 URL:            http://www.memcached.org/
-Source0:        http://www.memcached.org/files/%{name}-%{version}.tar.gz
+Source0:        http://www.memcached.org/files/%{real_name}-%{version}.tar.gz
 
 # custom unit file
 Source1:        memcached.service
@@ -27,6 +30,11 @@ Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 Requires(pre):  shadow-utils
+
+Provides: %{real_name} = %{version}-%{release}
+Provides: %{real_name}%{?_isa} = %{version}-%{release}
+Provides: config(%{real_name}) = %{version}-%{release}
+Conflicts: %{real_name} < %{version}
 
 
 %description
@@ -89,7 +97,7 @@ install -Dp -m0644 %{SOURCE1} %{buildroot}%{_unitdir}/memcached.service
 
 # Default configs
 mkdir -p %{buildroot}/%{_sysconfdir}/sysconfig
-cat <<EOF >%{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+cat <<EOF >%{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}
 PORT="11211"
 USER="%{username}"
 MAXCONN="1024"
@@ -98,7 +106,7 @@ OPTIONS=""
 EOF
 
 # Constant timestamp on the config file.
-touch -r %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+touch -r %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}
 
 
 %pre
@@ -123,7 +131,7 @@ exit 0
 
 %files
 %doc AUTHORS ChangeLog COPYING NEWS README.md doc/CONTRIBUTORS doc/*.txt
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_sysconfdir}/sysconfig/%{real_name}
 %{_bindir}/memcached-tool
 %{_bindir}/memcached
 %{_mandir}/man1/memcached-tool.1*

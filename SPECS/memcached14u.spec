@@ -11,7 +11,7 @@
 %define groupname  memcached
 
 Name:           %{real_name}%{ius_suffix}
-Version:        1.4.17
+Version:        1.4.24
 Release:        1.ius%{?dist}
 Summary:        High Performance, Distributed Memory Object Cache
 %if 0%{?rhel} <= 6

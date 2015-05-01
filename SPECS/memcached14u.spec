@@ -69,7 +69,7 @@ access to the memcached binary include files.
 
 
 %prep
-%setup -q
+%setup -q -n %{real_name}-%{version}
 %patch001 -p1 -b .manpages
 
 

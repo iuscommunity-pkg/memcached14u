@@ -25,8 +25,6 @@ BuildRequires:  perl(Test::More), perl(Test::Harness)
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-# For triggerun
-Requires(post): systemd-sysv
 Requires(pre):  shadow-utils
 
 
@@ -120,16 +118,6 @@ exit 0
 
 %postun
 %systemd_postun_with_restart memcached.service
-
-%triggerun -- memcached < 0:1.4.13-2
-# Save the current service runlevel info
-# User must manually run systemd-sysv-convert --apply memcached
-# to migrate them to systemd targets
-/usr/bin/systemd-sysv-convert --save memcached >/dev/null 2>&1 ||:
-
-# Run these because the SysV package being removed won't do them
-/sbin/chkconfig --del memcached >/dev/null 2>&1 || :
-/bin/systemctl try-restart memcached.service >/dev/null 2>&1 || :
 
 
 %files

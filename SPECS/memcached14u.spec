@@ -119,7 +119,7 @@ PORT="11211"
 USER="%{username}"
 MAXCONN="1024"
 CACHESIZE="64"
-OPTIONS=""
+OPTIONS="-l localhost"
 EOF
 
 # Constant timestamp on the config file.

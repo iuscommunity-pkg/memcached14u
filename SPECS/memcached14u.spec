@@ -191,6 +191,13 @@ fi
 
 
 %changelog
+* Fri May 01 2015 Carl George <carl.george@rackspace.com> - 1.4.24-1.ius
+- Port from Fedora to IUS
+- Latest upstream
+- Ensure that /usr/include/memcached is owned
+- Add support for sysvinit
+- Only listen on localhost by default
+
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0:1.4.17-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 

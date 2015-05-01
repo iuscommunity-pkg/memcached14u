@@ -19,8 +19,6 @@ Patch001:       memcached-manpages.patch
 
 # Fixes
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
 BuildRequires:  libevent-devel systemd-units
 BuildRequires:  perl(Test::More), perl(Test::Harness)
 
@@ -74,7 +72,6 @@ fi
 make test
 
 %install
-rm -rf %{buildroot}
 make install DESTDIR=%{buildroot} INSTALL="%{__install} -p"
 # remove memcached-debug
 rm -f %{buildroot}/%{_bindir}/memcached-debug
@@ -99,9 +96,6 @@ EOF
 
 # Constant timestamp on the config file.
 touch -r %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
-
-%clean
-rm -rf %{buildroot}
 
 
 %pre
@@ -135,7 +129,6 @@ exit 0
 
 
 %files
-%defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING NEWS README.md doc/CONTRIBUTORS doc/*.txt
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %{_bindir}/memcached-tool
@@ -146,7 +139,6 @@ exit 0
 
 
 %files devel
-%defattr(-,root,root,0755)
 %{_includedir}/memcached/*
 
 %changelog

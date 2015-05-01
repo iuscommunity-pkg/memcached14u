@@ -35,26 +35,32 @@ memcached is a high-performance, distributed memory object caching
 system, generic in nature, but intended for use in speeding up dynamic
 web applications by alleviating database load.
 
+
 %package devel
 Summary: Files needed for development using memcached protocol
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 
+
 %description devel
 Install memcached-devel if you are developing C/C++ applications that require
 access to the memcached binary include files.
 
+
 %prep
 %setup -q
 %patch001 -p1 -b .manpages
+
 
 %build
 # compile with full RELRO
 export CFLAGS="%{optflags} -pie -fpie"
 export LDFLAGS="-Wl,-z,relro,-z,now"
 
+
 %configure
 make %{?_smp_mflags}
+
 
 %check
 # whitespace tests fail locally on fedpkg systems now that they use git
@@ -67,6 +73,7 @@ if [ `id -u` -ne 0 ]; then
   rm -f t/daemonize.t
 fi
 make test
+
 
 %install
 make install DESTDIR=%{buildroot} INSTALL="%{__install} -p"
@@ -137,6 +144,7 @@ exit 0
 
 %files devel
 %{_includedir}/memcached/*
+
 
 %changelog
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0:1.4.17-3

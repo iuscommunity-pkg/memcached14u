@@ -1,6 +1,12 @@
 %global real_name memcached
 %global ius_suffix 14u
 
+%if 0%{?rhel} >= 7
+%global with_systemd 1
+%else
+%global with_systemd 0
+%endif
+
 %define username   memcached
 %define groupname  memcached
 
@@ -14,9 +20,8 @@ Group:          System Environment/Daemons
 License:        BSD
 URL:            http://www.memcached.org/
 Source0:        http://www.memcached.org/files/%{real_name}-%{version}.tar.gz
-
-# custom unit file
 Source1:        memcached.service
+Source2:        memcached.init
 
 # Patches
 Patch001:       memcached-manpages.patch
@@ -28,10 +33,17 @@ BuildRequires:  perl(Test::More)
 BuildRequires:  perl(Test::Harness)
 Requires(pre):  shadow-utils
 
+%if 0%{?with_systemd}
 BuildRequires: systemd
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+%else
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+Requires(postun): initscripts
+%endif # with_systemd
 
 Provides: %{real_name} = %{version}-%{release}
 Provides: %{real_name}%{?_isa} = %{version}-%{release}
@@ -94,8 +106,11 @@ install -Dp -m0755 scripts/memcached-tool %{buildroot}%{_bindir}/memcached-tool
 install -Dp -m0644 scripts/memcached-tool.1 \
         %{buildroot}%{_mandir}/man1/memcached-tool.1
 
-# Unit file
+%if 0%{?with_systemd}
 install -Dp -m0644 %{SOURCE1} %{buildroot}%{_unitdir}/memcached.service
+%else
+install -Dp -m0755 %{SOURCE2} %{buildroot}%{_initrddir}/memcached
+%endif # with_systemd
 
 # Default configs
 mkdir -p %{buildroot}/%{_sysconfdir}/sysconfig
@@ -110,35 +125,65 @@ EOF
 # Constant timestamp on the config file.
 touch -r %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{real_name}
 
+%if ! 0%{?with_systemd}
+# only used to hold pid file
+mkdir -p %{buildroot}/%{_localstatedir}/run/%{real_name}
+%endif
+
 
 %pre
 getent group %{groupname} >/dev/null || groupadd -r %{groupname}
 getent passwd %{username} >/dev/null || \
-useradd -r -g %{groupname} -d /run/memcached \
+useradd -r -g %{groupname} -d %{_localstatedir}/run/%{real_name} \
     -s /sbin/nologin -c "Memcached daemon" %{username}
 exit 0
 
 
 %post
-%systemd_post memcached.service
+%if 0%{?with_systemd}
+%systemd_post %{real_name}.service
+%else
+chkconfig --add %{real_name}
+%endif # with_systemd
 
 
 %preun
-%systemd_preun memcached.service
+%if 0%{?with_systemd}
+%systemd_preun %{real_name}.service
+%else
+if [ "$1" -eq "0" ] ; then
+    service %{real_name} stop &> /dev/null
+    chkconfig --del %{real_name} &> /dev/null
+fi
+%endif # with_systemd
 
 
 %postun
-%systemd_postun_with_restart memcached.service
+%if 0%{?with_systemd}
+%systemd_postun_with_restart %{real_name}.service
+%else
+if [ "$1" -ge "1" ]; then
+    service %{real_name} condrestart &> /dev/null
+fi
+%endif # with_systemd
 
 
 %files
 %doc AUTHORS ChangeLog COPYING NEWS README.md doc/CONTRIBUTORS doc/*.txt
 %config(noreplace) %{_sysconfdir}/sysconfig/%{real_name}
+%if ! 0%{?with_systemd}
+# only used to hold pid file
+%ghost %dir %attr(755,%{username},%{groupname}) %{_localstatedir}/run/memcached
+%endif # not with_systemd
 %{_bindir}/memcached-tool
 %{_bindir}/memcached
 %{_mandir}/man1/memcached-tool.1*
 %{_mandir}/man1/memcached.1*
+%if 0%{?with_systemd}
 %{_unitdir}/memcached.service
+%else
+%{_initrddir}/memcached
+%endif # with_systemd
 
 
 %files devel

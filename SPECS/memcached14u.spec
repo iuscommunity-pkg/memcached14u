@@ -131,7 +131,7 @@ exit 0
 
 
 %files devel
-%{_includedir}/memcached/*
+%{_includedir}/memcached
 
 
 %changelog
